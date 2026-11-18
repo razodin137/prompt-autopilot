@@ -19,7 +19,7 @@ Read these first. They beat anything below that contradicts them.
   `package.json`, `.opencode/`, `scripts/` and the other steps' files alone.
 - Do not print whole files. Use `grep -n` and `sed -n`, and keep output short.
 - If an anchor is missing, appears twice, or the move would change behaviour,
-  write the reason to `.scratch/split/BLOCKED-06-discover` and stop. Do not
+  write the reason to `prompt/split-logs/BLOCKED-06-discover` and stop. Do not
   improvise, do not delete a test, and do not weaken the check.
 - Verify with `python3 -c "import ribbon"` and `npm run check`. Run the full
   check at most twice.

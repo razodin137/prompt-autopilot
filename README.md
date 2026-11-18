@@ -87,9 +87,11 @@ One copy, in `scripts/`:
     ./scripts/split-serial.sh ../packs/listmonk
     FROM=05-shell COMMIT=0 ./scripts/split-serial.sh
 
-Fresh session per file, one commit per green step, logs in `.scratch/split/`.
+Fresh session per file, one commit per green step, logs in
+`<pack>/split-logs/`.
 The tree must be clean when committing is on; `COMMIT=0` skips both the check
-and the commits.
+and the commits. A `prompt/` pack is added to `.gitignore` on the first run if
+it is not there yet.
 
 ## Before you hand it over
 

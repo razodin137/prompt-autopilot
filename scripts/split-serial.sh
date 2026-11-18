@@ -10,7 +10,8 @@
 #   FROM=05-name ./scripts/split-serial.sh     resume at a step
 #
 # Files run in filename order, so 01-, 02-, 03- sets the order. Logs land in
-# .scratch/split/.
+# <pack>/split-logs/, which the runner keeps out of git. A prompt/ pack is
+# added to the repo's .gitignore when it is not there yet.
 
 set -euo pipefail
 
@@ -31,7 +32,7 @@ PACK=${1:-${PACK:-prompt}}
 MODEL=${MODEL:-ollama/deepseek-v4.1-flash:1017-cloud}
 COMMIT=${COMMIT:-1}
 FROM=${FROM:-}
-LOGS=.scratch/split
+LOGS=$PACK/split-logs
 
 if [ ! -d "$PACK" ]; then
   echo "no pack at $PACK; prompts live in <repo>/$PACK" >&2
@@ -64,12 +65,19 @@ if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   COMMIT=0
 fi
 
-if [ "$COMMIT" = "1" ] && [ -n "$(git status --porcelain --untracked-files=normal -- . ':(exclude).scratch')" ]; then
+if [ "$COMMIT" = "1" ] && [ -n "$(git status --porcelain --untracked-files=normal)" ]; then
   echo "tree is dirty; commit it first, or run with COMMIT=0" >&2
   exit 1
 fi
 
+if [ -d prompt ] && [ "$COMMIT" = "1" ] && ! grep -qE '^/?prompt/?$' .gitignore 2>/dev/null; then
+  printf 'prompt/\n' >> .gitignore
+fi
+
 mkdir -p "$LOGS"
+if [ ! -f "$LOGS/.gitignore" ]; then
+  printf '*\n' > "$LOGS/.gitignore"
+fi
 
 for file in "${files[@]}"; do
   name=$(basename "$file" .md)
